@@ -1,5 +1,7 @@
 from django.db import models
+from django.db.models.deletion import CASCADE
 from django.utils.translation import ugettext_lazy as _
+import uuid
 
 # Create your models here.
 WEEKDAYS = [
@@ -36,3 +38,30 @@ class Restaurant(models.Model):
 
     def __str__(self):
         return f"{self.restaurantName}"
+
+class Buyer(models.Model):
+    id = models.IntegerField(primary_key=True)
+    cashBalance = models.FloatField()
+    name = models.CharField(max_length=200)
+
+class Buyer(models.Model):
+    id = models.IntegerField(primary_key=True)
+    cashBalance = models.FloatField()
+    name = models.CharField(max_length=200)
+    
+    def __str__(self):
+        return f"{self.id}-{self.name}"
+
+class Purchase(models.Model):
+    purchase_id = models.CharField(max_length=30, unique=True, default=uuid.uuid4)
+    purchaser = models.ForeignKey(Buyer, related_name='purchaseHistory', on_delete=CASCADE)
+    dishName = models.CharField(max_length=255)
+    restaurantName = models.CharField(max_length=255)
+    transactionAmount = models.FloatField()
+    transactionDate = models.DateTimeField()
+
+    def __str__(self):
+        return f"{self.purchaser}-{self.dishName}-{self.purchase_id}"
+
+
+    

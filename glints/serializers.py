@@ -35,8 +35,11 @@ class RestaurantSerializer(serializers.ModelSerializer):
         fields = ['restaurantName','cashBalance','menu','openingHours']
 
     def get_menu(self, instance):
-        price_gt = self.context['request'].query_params.get('price_gt')
-        filtered_menu = Menu.objects.filter(available_in=instance,price__gte=price_gt)
+        price_gt = self.context["request"].query_params.get('price_gt')
+        if price_gt: 
+            filtered_menu = Menu.objects.filter(available_in=instance,price__gte=price_gt)
+        else:
+            filtered_menu = Menu.objects.filter(available_in=instance)
         serializer = MenuSerializer(filtered_menu, many=True)
         return serializer.data
 

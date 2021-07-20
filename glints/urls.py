@@ -1,6 +1,6 @@
 from django.urls import include, path
 from rest_framework import routers
-from .views import UserViewSet, RestaurantList
+from .views import UserViewSet, RestaurantList, RestaurantSearchView
 
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
@@ -8,4 +8,5 @@ router.register(r'users', UserViewSet)
 urlpatterns = [
     path('', include(router.urls)),
     path('restaurants/',RestaurantList.as_view(),name='restaurant-list'),
+    path('restaurants/search/',RestaurantSearchView.as_view(),name='restaurant-filter'),
 ]
