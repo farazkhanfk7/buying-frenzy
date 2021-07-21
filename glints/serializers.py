@@ -36,8 +36,9 @@ class RestaurantSerializer(serializers.ModelSerializer):
 
     def get_menu(self, instance):
         price_gt = self.context["request"].query_params.get('price_gt')
+        price_lt = self.context["request"].query_params.get('price_lt')
         if price_gt: 
-            filtered_menu = Menu.objects.filter(available_in=instance,price__gte=price_gt)
+            filtered_menu = Menu.objects.filter(available_in=instance,price__gte=price_gt,price__lt=price_lt)
         else:
             filtered_menu = Menu.objects.filter(available_in=instance)
         serializer = MenuSerializer(filtered_menu, many=True)
@@ -53,4 +54,4 @@ class PurchaseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Purchase
-        fields = ['purchaser','menu_bought','restaurant','dishName','restaurantName','transactionAmount','transactionDate']
+        fields = ['purchase_id','purchaser','menu_bought','restaurant','dishName','restaurantName','transactionAmount','transactionDate','success']

@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models.deletion import CASCADE, DO_NOTHING
 from datetime import datetime
+from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 import uuid
 
@@ -56,7 +57,11 @@ class Purchase(models.Model):
     dishName = models.CharField(max_length=255, blank=True)
     restaurantName = models.CharField(max_length=255, blank=True)
     transactionAmount = models.FloatField(blank=True)
-    transactionDate = models.DateTimeField(default=datetime.now())
+    transactionDate = models.DateTimeField(default=timezone.now)
+    success = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ('-transactionDate', )
 
     def __str__(self):
         return f"{self.purchaser}-{self.dishName}-{self.purchase_id}"

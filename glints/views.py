@@ -1,5 +1,7 @@
-from django.shortcuts import render
+from os import SEEK_CUR
+import razorpay
 from django.contrib.auth.models import User
+from django.conf import settings
 from rest_framework import viewsets, permissions, generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -34,7 +36,7 @@ class RestaurantList(APIView):
         if show is not None:
             price_gt = self.request.query_params.get('price_gt')
             price_lt = self.request.query_params.get('price_lt')
-            instance = Restaurant.objects.filter(menu__price__gte=price_gt).distinct()
+            instance = Restaurant.objects.filter(menu__price__gte=price_gt,menu__price__lte=price_lt).distinct()
             instance = instance[:int(show)]
         elif day and time:
             weekday = str(day)
@@ -55,7 +57,7 @@ class RestaurantSearchView(generics.ListAPIView):
     search_fields = ['restaurantName']
 
 @permission_classes((permissions.IsAuthenticated,))
-class PaymentView(APIView):
+class PurchaseView(APIView):
 
     def get_queryset(self, request):
         if request.user.is_superuser:
@@ -72,15 +74,32 @@ class PaymentView(APIView):
         if serializer.is_valid():
             menu_obj = Menu.objects.get(id=request.data['menu_bought'])
             purchaser_obj = Buyer.objects.get(id=request.data['purchaser'])
-            restaurant_obj = Restaurant.objects.get(id=request.data['restaurant'])
-            print(menu_obj)
+            restaurant_obj = Restaurant.objects.get(menu=menu_obj.id)
             serializer.save(purchaser=purchaser_obj,
                             menu_bought=menu_obj,
                             restaurant=restaurant_obj,
                             dishName=menu_obj.dishName,
                             restaurantName=restaurant_obj.restaurantName,
                             transactionAmount=menu_obj.price)
-            return Response(serializer.data,status=status.HTTP_201_CREATED)
+            amount = menu_obj.price
+            # setup razorpay client
+            client = razorpay.Client(auth=(settings.RAZORPAY_KEY, settings.RAZORPAY_SECRET))
+
+            # create razorpay order
+            payment = client.order.create({"amount": float(amount) * 100, 
+                                        "currency": "INR",
+                                        "receipt" : serializer.data['purchase_id'],
+                                        "payment_capture": "1"})
+            data = {'payment':payment, 'data':serializer.data}
+            return Response(data,status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+@permission_classes((permissions.IsAuthenticated,))
+class PaymentView(APIView):
+
+    def get(self, request, format=None):
+        data = {'data':'This feature is not implemented yet. Should be done using token based auth and razorpay checkout panel'}
+        return Response(data)
+        
 
