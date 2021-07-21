@@ -32,7 +32,8 @@ RAZORPAY_SECRET = os.environ['RAZORPAY_SECRET']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# Allowed all hosts only for testing
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
