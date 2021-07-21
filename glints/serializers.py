@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Restaurant, Menu, OpeningTime
+from .models import Purchase, Restaurant, Menu, OpeningTime
 
 weekdays = {1:"Mon",2:"Tues",3:"Weds",4:"Thurs",5:"Fri",6:"Sat",7:"Sun"}
 
@@ -47,3 +47,10 @@ class RestaurantSerializer(serializers.ModelSerializer):
         response = super().to_representation(instance)
         response['openingHours'] = OpeningTimeSerializer(instance.openingHours, many=True).data
         return response
+
+class PurchaseSerializer(serializers.ModelSerializer):
+    transactionDate = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S %p", required=False)
+
+    class Meta:
+        model = Purchase
+        fields = ['purchaser','menu_bought','restaurant','dishName','restaurantName','transactionAmount','transactionDate']
