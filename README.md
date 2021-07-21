@@ -16,6 +16,11 @@ The operations the front-end team would need you to support are:
 
 Couldn't add all features because of time shortage due to my work schedule.
 
+**Docker Setup**
+
+* `$ docker-compose build`
+* `$ docker-compose up`
+
 # Features Added 
 
 > List of features added.
