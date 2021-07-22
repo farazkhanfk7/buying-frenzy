@@ -21,6 +21,14 @@ Couldn't add all features because of time shortage due to my work schedule.
 * `$ docker-compose build`
 * `$ docker-compose up`
 
+**Administrator Login Credentials**
+
+```
+Username : admin
+
+Password : 1234
+```
+
 # Features Added 
 
 > List of features added.
